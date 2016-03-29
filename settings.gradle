@@ -1,1 +1,1 @@
-include ':Sample', ':TinyUtil'
+include ':sample', ':lib'
