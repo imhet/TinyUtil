@@ -4,6 +4,8 @@ import android.text.TextUtils;
 import android.util.Log;
 
 /**
+ * 日志工具类
+ *
  * Created by het on 16/3/31.
  */
 public class L {
