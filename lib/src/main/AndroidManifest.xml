@@ -1,5 +1,10 @@
-<manifest package="org.xutils">
+<?xml version="1.0" encoding="utf-8"?>
+<manifest
+    package="im.het.tiny.util"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <application />
 
+    <application
+        android:allowBackup="true"
+        android:supportsRtl="true" />
 </manifest>
