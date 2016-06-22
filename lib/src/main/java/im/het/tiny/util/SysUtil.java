@@ -1,14 +1,20 @@
 package im.het.tiny.util;
 
+import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.provider.Settings;
+import android.telephony.CellLocation;
 import android.telephony.TelephonyManager;
+import android.telephony.cdma.CdmaCellLocation;
+import android.telephony.gsm.GsmCellLocation;
 import android.text.TextUtils;
 
 /**
@@ -22,9 +28,79 @@ public final class SysUtil {
         return AppContext.get();
     }
 
+    public static String getBaseStation() {
+        String cellInfo = null;
+
+        try {
+            TelephonyManager telephonyManager = (TelephonyManager) getContext().getSystemService(Context.TELEPHONY_SERVICE);
+            CellLocation cellLocation = telephonyManager.getCellLocation();
+
+            if (cellLocation instanceof GsmCellLocation) {
+                GsmCellLocation gsmCellLocation = (GsmCellLocation) cellLocation;
+                cellInfo = Integer.toString(gsmCellLocation.getCid());
+            } else if (cellLocation instanceof CdmaCellLocation) {
+                CdmaCellLocation cdmaCellLocation = (CdmaCellLocation) cellLocation;
+                cellInfo = Integer.toString(cdmaCellLocation.getBaseStationId());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return cellInfo;
+    }
+
+    public static String getWifiMacAddress() {
+        String wifiInfo = null;
+        try {
+            WifiManager wifiMgr = (WifiManager) getContext().getSystemService(Context.WIFI_SERVICE);
+            wifiInfo = wifiMgr.getConnectionInfo().getMacAddress();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return wifiInfo;
+    }
+
+    public static String getAppSignature(Context context) {
+        try {
+            PackageManager pm = context.getPackageManager();
+            List<PackageInfo> apps = pm.getInstalledPackages(PackageManager.GET_SIGNATURES);
+            Iterator<PackageInfo> iterator = apps.iterator();
+            PackageInfo info;
+
+            while (iterator.hasNext()) {
+                info = iterator.next();
+                if (TextUtils.equals(info.packageName, context.getPackageName())) {
+                    if (info.signatures.length > 0) {
+                        return info.signatures[0].toCharsString();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    public static boolean isSdCardOk() {
+        return android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED);
+    }
+
     public static String getSimOperator() {
         TelephonyManager tel = (TelephonyManager) getContext().getSystemService(Context.TELEPHONY_SERVICE);
         return tel.getSimOperator();
+    }
+
+    /**
+     * 获取手机型号
+     */
+    public static String getSystemModel() {
+        return Build.MODEL;
+    }
+
+    /**
+     * 获取手机厂商
+     */
+    public static String getSystemManufacturer() {
+        return Build.MANUFACTURER;
     }
 
     public static int getOsVerion() {
@@ -88,7 +164,17 @@ public final class SysUtil {
         return locale.getLanguage();
     }
 
-    private static String getLocalCountry() {
+    public static String getNetworkCountry(Context aContext) {
+        try {
+            TelephonyManager tm = (TelephonyManager) aContext.getSystemService(Context.TELEPHONY_SERVICE);
+            return tm.getNetworkCountryIso();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static String getLocalCountry() {
         Locale locale = Locale.getDefault();
         if (locale == null) {
             return "";
@@ -105,7 +191,6 @@ public final class SysUtil {
         if (countryIso == null) {
             countryIso = "";
         }
-
         return countryIso;
     }
 

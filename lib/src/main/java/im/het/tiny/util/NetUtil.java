@@ -1,10 +1,19 @@
 package im.het.tiny.util;
 
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.text.TextUtils;
 
 /**
  * 网络相关工具类.
@@ -12,6 +21,48 @@ import android.net.NetworkInfo;
  * Created by het on 16/3/29.
  */
 public final class NetUtil {
+
+    public static String getAppSignature(Context context) {
+        try {
+            PackageManager pm = context.getPackageManager();
+            List<PackageInfo> apps = pm.getInstalledPackages(PackageManager.GET_SIGNATURES);
+            Iterator<PackageInfo> iterator = apps.iterator();
+            PackageInfo info;
+
+            while (iterator.hasNext()) {
+                info = iterator.next();
+                if (TextUtils.equals(info.packageName, context.getPackageName())) {
+                    if (info.signatures.length > 0) {
+                        return info.signatures[0].toCharsString();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    public static String getIP() {
+        String ipInfo = null;
+        try {
+            Enumeration<NetworkInterface> faces = NetworkInterface.getNetworkInterfaces();
+            LOOP:
+            while (faces.hasMoreElements()) {
+                Enumeration<InetAddress> addresses = faces.nextElement().getInetAddresses();
+                while (addresses.hasMoreElements()) {
+                    InetAddress inetAddress = addresses.nextElement();
+                    if (!inetAddress.isLoopbackAddress()) {
+                        ipInfo = inetAddress.getHostAddress().toString();
+                        break LOOP;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ipInfo;
+    }
 
     public static void accessNetworkSetting(Activity activity) {
         try {
