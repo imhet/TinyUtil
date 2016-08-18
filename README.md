@@ -1,9 +1,21 @@
 # TinyUtil
 
-收集整理常用的工具类.
+Collect common utils on android.
 
-整理的原则:
 
-1. 尽量不写注释,通过合适的类名或方法名等知道其用法
-2. 少写参数,避免困惑和不方便
-3. 命名尽可能的短
+## Usage
+
+Step 1. Add it in your root build.gradle at the end of repositories:
+
+	allprojects {
+		repositories {
+			...
+			maven { url "https://jitpack.io" }
+		}
+	}
+
+Step 2. Add the dependency
+
+	dependencies {
+		compile 'com.github.User:Repo:Tag'
+	}
