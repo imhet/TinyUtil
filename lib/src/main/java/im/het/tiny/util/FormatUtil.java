@@ -2,17 +2,24 @@ package im.het.tiny.util;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 
 /**
  * Created by het on 16/4/23.
  */
 public class FormatUtil {
 
+    public static String formatDate(long date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return sdf.format(date);
+    }
+
     /**
      * 保留小数点后若干位
      *
-     * @param d 要格式化的数
+     * @param d     要格式化的数
      * @param scale 小数点后的位数
+     *
      * @return
      */
     public static double getDecimal(double d, int scale) {
